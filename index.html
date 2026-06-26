@@ -7,167 +7,107 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>トマトHue記録</title>
 <style>
-  :root {
-    --bg: #14110e;
-    --panel: #1f1a15;
-    --panel2: #271f18;
-    --line: #3a322a;
-    --text: #f3ede4;
-    --muted: #a89d8d;
-    --accent: #ff5a3c;
-    --accent-dim: #c7402a;
-    --ok: #7bbf6a;
-    --blue: #5aa9ff;
+  :root{
+    --bg:#14110e; --panel:#1f1a15; --panel2:#271f18; --line:#3a322a;
+    --text:#f3ede4; --muted:#a89d8d; --accent:#ff5a3c; --accent-dim:#c7402a;
+    --ok:#7bbf6a; --blue:#5aa9ff;
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    margin: 0; padding: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
-    -webkit-text-size-adjust: 100%;
-  }
-  header {
-    padding: 14px 16px; border-bottom: 1px solid var(--line);
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; background: var(--bg); z-index: 10;
-  }
-  header h1 { font-size: 16px; margin: 0; font-weight: 650; }
-  header .date { font-size: 13px; color: var(--muted); }
-  .tabs {
-    display: flex; gap: 0; border-bottom: 1px solid var(--line);
-    position: sticky; top: 53px; background: var(--bg); z-index: 9;
-  }
-  .tab {
-    flex: 1; border: none; border-radius: 0; background: transparent;
-    color: var(--muted); font-size: 15px; font-weight: 650; padding: 14px;
-    border-bottom: 2px solid transparent;
-  }
-  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
-  .rec-card {
-    border: 1px solid var(--line); border-radius: 14px; margin-bottom: 14px;
-    background: var(--panel); overflow: hidden;
-  }
-  .rec-head {
-    display: flex; align-items: center; gap: 10px; padding: 14px 16px;
-    border-bottom: 1px solid var(--line); background: var(--panel2);
-  }
-  .rec-head .badge {
-    width: 40px; height: 40px; border-radius: 10px; flex: none;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 800; color: #14110e; background: var(--accent);
-  }
-  .rec-head .rec-meta { flex: 1; }
-  .rec-head .rec-meta .t { font-size: 16px; font-weight: 700; }
-  .rec-head .rec-meta .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .rec-rows { padding: 6px 8px 10px; }
-  .rec-row {
-    display: flex; align-items: center; gap: 12px; padding: 11px 8px;
-    border-bottom: 1px solid var(--line);
-  }
-  .rec-row:last-child { border-bottom: none; }
-  .rec-row .rdate { font-size: 14px; color: var(--muted); width: 92px; flex: none; }
-  .rec-row .rhue { font-size: 20px; font-weight: 750; flex: 1; }
-  .rec-row .rdelta { font-size: 13px; font-weight: 650; width: 64px; text-align: right; flex: none; }
-  .rec-row .rdelta.down { color: var(--accent); }
-  .rec-row .rdelta.up { color: var(--ok); }
-  .rec-row .rdel {
-    width: 32px; height: 32px; flex: none; padding: 0; border-radius: 8px;
-    background: transparent; border: 1px solid var(--line); color: var(--muted);
-    font-size: 14px; line-height: 1;
-  }
-  .rec-row .rdel:active { background: var(--accent); color: #14110e; border-color: transparent; }
-  .rec-row .rlabel {
-    font-size: 11px; padding: 3px 8px; border-radius: 999px;
-    border: 1px solid var(--line); color: var(--muted); flex: none;
-  }
-  .rec-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 16px; line-height: 1.7; }
-  main { padding: 16px; max-width: 760px; margin: 0 auto; padding-bottom: 120px; }
-  .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
-  button {
-    appearance: none; border: 1px solid var(--line); border-radius: 12px;
-    background: var(--panel); color: var(--text);
-    font-size: 15px; font-weight: 600; padding: 14px; cursor: pointer;
-  }
-  button:active { background: var(--panel2); }
-  button.primary { background: var(--accent); color: #1a0f0b; border-color: transparent; }
-  button.primary:active { background: var(--accent-dim); }
-  button.primary:disabled { background: #4a423a; color: var(--muted); }
-  button.ghost { background: transparent; }
-  .status {
-    margin-top: 12px; padding: 10px 12px; border-radius: 10px;
-    background: var(--panel); border: 1px solid var(--line);
-    font-size: 12.5px; line-height: 1.6; color: var(--muted);
-    white-space: pre-wrap; word-break: break-word;
-  }
-  .status .ok { color: var(--ok); } .status .err { color: var(--accent); }
-  .canvas-wrap {
-    margin-top: 14px; border-radius: 12px; overflow: hidden;
-    border: 1px solid var(--line); background: #000; display: none; position: relative;
-  }
-  canvas { width: 100%; display: block; touch-action: none; }
-  .hint {
-    margin-top: 10px; font-size: 12.5px; color: var(--muted); line-height: 1.6;
-  }
-  input[type=file] { display: none; }
-  .det-list { margin-top: 14px; display: none; }
-  .det-list h3 { font-size: 13px; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
-  .det-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px;
-    border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px;
-    background: var(--panel);
-  }
-  .det-swatch { width: 34px; height: 34px; border-radius: 8px; flex: none; border: 1px solid var(--line); }
-  .det-info { flex: 1; font-size: 13px; line-height: 1.45; }
-  .det-info b { font-size: 15px; }
-  .det-num {
-    width: 46px; height: 40px; flex: none; border-radius: 8px;
-    background: var(--panel2); border: 1px solid var(--line);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 17px; font-weight: 700;
-  }
-  .det-num.unset { color: var(--muted); }
-  .det-num.set { color: var(--accent); border-color: var(--accent); }
-  select {
-    appearance: none; background: var(--panel2); color: var(--text);
-    border: 1px solid var(--line); border-radius: 8px; padding: 9px 8px;
-    font-size: 13px; width: 100%;
-  }
-  .footer-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-    background: linear-gradient(transparent, var(--bg) 22%);
-    display: flex; gap: 10px; max-width: 760px; margin: 0 auto;
-  }
-  .footer-bar button { flex: 1; }
-  .saved-count { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;-webkit-text-size-adjust:100%;}
+  header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:10;}
+  header h1{font-size:16px;margin:0;font-weight:650;}
+  header .date{font-size:13px;color:var(--muted);}
+  .tabs{display:flex;border-bottom:1px solid var(--line);position:sticky;top:53px;background:var(--bg);z-index:9;}
+  .tab{flex:1;border:none;background:transparent;color:var(--muted);font-size:15px;font-weight:650;
+    padding:14px;border-bottom:2px solid transparent;}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent);}
+  main{padding:16px;max-width:760px;margin:0 auto;padding-bottom:120px;}
+  button{appearance:none;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    color:var(--text);font-size:15px;font-weight:600;padding:14px;cursor:pointer;}
+  button:active{background:var(--panel2);}
+  button.primary{background:var(--accent);color:#1a0f0b;border-color:transparent;}
+  button.primary:active{background:var(--accent-dim);}
+  button.primary:disabled{background:#4a423a;color:var(--muted);}
+  button.ghost{background:transparent;}
+  .status{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--panel);
+    border:1px solid var(--line);font-size:12.5px;line-height:1.6;color:var(--muted);
+    white-space:pre-wrap;word-break:break-word;}
+  .status .ok{color:var(--ok);} .status .err{color:var(--accent);}
+  .canvas-wrap{margin-top:14px;border-radius:12px;overflow:hidden;border:1px solid var(--line);
+    background:#000;display:none;position:relative;}
+  canvas{width:100%;display:block;touch-action:none;}
+  .hint{margin-top:10px;font-size:12.5px;color:var(--muted);line-height:1.6;}
+  input[type=file]{display:none;}
 
-  /* number pad modal */
-  .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,.6);
-    display: none; align-items: flex-end; z-index: 50;
-  }
-  .modal {
-    background: var(--panel); width: 100%; border-radius: 18px 18px 0 0;
-    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--line);
-  }
-  .modal h3 { margin: 0 0 4px; font-size: 16px; }
-  .modal p { margin: 0 0 14px; font-size: 12.5px; color: var(--muted); }
-  .numgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
-  .numgrid button { padding: 14px 0; font-size: 17px; }
-  .numgrid button.prev { border-color: var(--accent); color: var(--accent); }
-  .new-num { display: flex; gap: 8px; margin-bottom: 12px; }
-  .new-num input {
-    flex: 1; background: var(--panel2); color: var(--text); border: 1px solid var(--line);
-    border-radius: 10px; padding: 12px; font-size: 16px;
-  }
-  .label-row { display: flex; gap: 6px; margin-bottom: 14px; }
-  .label-row button { flex: 1; padding: 12px 4px; font-size: 13px; }
-  .label-row button.sel { background: var(--accent); color: #1a0f0b; border-color: transparent; }
-  .modal .modal-actions { display: flex; gap: 10px; }
-  #modalReject.on { background: var(--accent); color: #1a0f0b; border-color: transparent; }
-  .det-item.rejected { opacity: 0.4; }
-  .det-item.rejected .det-num { color: var(--accent); border-color: var(--accent); }
+  /* cluster selector */
+  .cluster-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .cluster-chip{padding:10px 14px;border-radius:999px;border:1px solid var(--line);
+    background:var(--panel);font-size:14px;font-weight:650;}
+  .cluster-chip.sel{background:var(--accent);color:#1a0f0b;border-color:transparent;}
+  .cluster-chip.add{color:var(--blue);}
+  .field-label{font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:600;}
+
+  .det-list{margin-top:14px;display:none;}
+  .det-list h3{font-size:13px;color:var(--muted);margin:0 0 8px;font-weight:600;}
+  .det-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);
+    border-radius:10px;margin-bottom:8px;background:var(--panel);}
+  .det-item.rejected{opacity:.4;}
+  .det-swatch{width:34px;height:34px;border-radius:8px;flex:none;border:1px solid var(--line);}
+  .det-info{flex:1;font-size:13px;line-height:1.45;} .det-info b{font-size:15px;}
+  .det-num{width:54px;height:40px;flex:none;border-radius:8px;background:var(--panel2);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;}
+  .det-num.unset{color:var(--muted);} .det-num.set{color:var(--accent);border-color:var(--accent);}
+
+  .footer-bar{position:fixed;bottom:0;left:0;right:0;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(transparent,var(--bg) 22%);display:flex;gap:10px;max-width:760px;margin:0 auto;}
+  .footer-bar button{flex:1;}
+  .saved-count{font-size:12px;color:var(--muted);text-align:center;margin-top:6px;}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;z-index:50;}
+  .modal{background:var(--panel);width:100%;border-radius:18px 18px 0 0;
+    padding:18px 16px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+    max-height:88vh;overflow-y:auto;}
+  .modal h3{margin:0 0 4px;font-size:16px;} .modal p{margin:0 0 14px;font-size:12.5px;color:var(--muted);}
+  .numgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+  .numgrid button{padding:14px 0;font-size:16px;} .numgrid button.prev{border-color:var(--accent);color:var(--accent);}
+  .numgrid button.sel{background:var(--accent);color:#1a0f0b;border-color:transparent;}
+  .new-num{display:flex;gap:8px;margin-bottom:12px;}
+  .new-num input{flex:1;background:var(--panel2);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:12px;font-size:16px;}
+  .label-row{display:flex;gap:6px;margin-bottom:10px;}
+  .label-row button{flex:1;padding:12px 4px;font-size:13px;}
+  .label-row button.sel{background:var(--accent);color:#1a0f0b;border-color:transparent;}
+  .modal-actions{display:flex;gap:10px;}
+  #modalReject.on{background:var(--accent);color:#1a0f0b;border-color:transparent;}
+
+  /* records browser */
+  .crumbs{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;}
+  .crumbs a{color:var(--blue);text-decoration:none;}
+  .grid-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .folder{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);}
+  .folder .thumb{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#000;}
+  .folder .thumb.empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:30px;}
+  .folder .fmeta{padding:10px 12px;}
+  .folder .fmeta .t{font-size:15px;font-weight:700;}
+  .folder .fmeta .s{font-size:11px;color:var(--muted);margin-top:2px;}
+  .rec-row{display:flex;align-items:center;gap:12px;padding:12px 10px;border:1px solid var(--line);
+    border-radius:10px;margin-bottom:8px;background:var(--panel);}
+  .rec-row .rnum{width:48px;height:40px;flex:none;border-radius:8px;background:var(--accent);color:#14110e;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;}
+  .rec-row .rhue{font-size:20px;font-weight:750;flex:1;}
+  .rec-row .rlabel{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);flex:none;}
+  .rec-row .rdel{width:32px;height:32px;flex:none;padding:0;border-radius:8px;background:transparent;
+    border:1px solid var(--line);color:var(--muted);font-size:14px;}
+  .rec-row .rdel:active{background:var(--accent);color:#14110e;border-color:transparent;}
+  .rec-empty{color:var(--muted);font-size:14px;text-align:center;padding:40px 16px;line-height:1.7;}
+  .trend{font-size:13px;color:var(--muted);margin:4px 0 14px;}
+  .big-photo{width:100%;border-radius:12px;border:1px solid var(--line);margin-bottom:14px;display:block;}
+  .addcluster{margin-top:8px;}
 </style>
 </head>
 <body>
@@ -181,6 +121,9 @@
 </nav>
 <main>
  <section id="captureView">
+  <p class="field-label">房を選択</p>
+  <div class="cluster-bar" id="clusterBar"></div>
+
   <button class="primary" id="pickBtn" disabled>読み込み中…</button>
   <input type="file" id="file" accept="image/*" capture="environment">
 
@@ -188,171 +131,223 @@
 
   <div class="canvas-wrap" id="cwrap"><canvas id="cv"></canvas></div>
   <div class="hint" id="hint" style="display:none">
-    検出された各トマトをタップ → 個体番号と熟度を割り当て。前日の番号があれば思い出して同じ番号を振ってください。誤検出にしたいトマトはタップして「誤検出にする」を押してください。
+    検出された各トマトをタップ → 個体番号と熟度を割り当て。誤検出はタップして「誤検出にする」を押してください。
     <div style="margin-top:10px">
       <label style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text)">
-        <input type="checkbox" id="maskToggle" checked style="width:18px;height:18px">
-        計測範囲(マスク)を表示
+        <input type="checkbox" id="maskToggle" checked style="width:18px;height:18px">計測範囲(マスク)を表示
       </label>
     </div>
   </div>
 
-  <div class="det-list" id="detList">
-    <h3>検出されたトマト</h3>
-    <div id="detItems"></div>
-  </div>
+  <div class="det-list" id="detList"><h3>検出されたトマト</h3><div id="detItems"></div></div>
  </section>
 
  <section id="recordsView" style="display:none">
+  <div class="crumbs" id="crumbs"></div>
   <div id="recordsBody"></div>
  </section>
 </main>
 
 <div class="footer-bar" id="footerBar" style="display:none">
-  <button class="ghost" id="importBtn">CSV読込</button>
   <button class="ghost" id="exportBtn">CSV書出</button>
   <button class="primary" id="saveBtn" disabled>記録</button>
 </div>
-<input type="file" id="csvFile" accept=".csv,text/csv">
 <div class="saved-count" id="savedCount" style="display:none"></div>
 
-<!-- number assignment modal -->
+<!-- assignment modal -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <h3>個体番号と熟度</h3>
     <p id="modalSub">このトマトに番号を割り当てます。</p>
     <div id="prevNums"></div>
     <div class="new-num">
-      <input type="text" id="newNumInput" placeholder="例: 1-1（画像番号-個体番号）" inputmode="text" autocapitalize="off" autocomplete="off">
+      <input type="text" id="newNumInput" placeholder="個体番号（例: 1, 2, 3）" inputmode="numeric" autocapitalize="off" autocomplete="off">
       <button id="newNumBtn" style="flex:none;padding:12px 16px">追加</button>
     </div>
     <div class="label-row" id="labelRow"></div>
+    <p id="curAssign" style="margin:0 0 12px;font-size:13px;color:var(--ok);font-weight:600">番号未設定</p>
     <div class="modal-actions">
       <button class="ghost" id="modalReject" style="flex:1">誤検出にする</button>
       <button class="ghost" id="modalClear" style="flex:none;padding:12px 16px">解除</button>
-      <button class="ghost" id="modalCancel" style="flex:none;padding:12px 16px">閉じる</button>
+      <button class="primary" id="modalDone" style="flex:none;padding:12px 20px">完了</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
 <script>
-const MODEL_URL = 'best_q.onnx';
-const IMG = 640, CONF = 0.35, MASK_THR = 0.5, IOU_DEDUP = 0.7;
-const LABELS = ['Green', 'Yellow', 'Orange', 'Red'];
-// natural sort so 1-2 < 1-10 < 2-1 (compare segment by segment, numbers numerically)
-function natCompare(a,b){
-  const pa=String(a).split('-'), pb=String(b).split('-');
-  const len=Math.max(pa.length,pb.length);
-  for(let i=0;i<len;i++){
-    const xa=pa[i]??'', xb=pb[i]??'';
-    const na=parseInt(xa,10), nb=parseInt(xb,10);
-    const bothNum=!isNaN(na)&&!isNaN(nb);
-    if(bothNum){ if(na!==nb) return na-nb; }
-    else { if(xa!==xb) return xa<xb?-1:1; }
-  }
-  return 0;
-}
-const LABEL_RANGES = {
-  'Green':  '60–160',
-  'Yellow': '40–60',
-  'Orange': '16–40',
-  'Red':    '0–16 / 340–360'
-};
-// classify a hue (0..360) into a color label, or '' if undefined
+const MODEL_URL='best_q.onnx';
+const IMG=640, CONF=0.35, MASK_THR=0.5, IOU_DEDUP=0.7;
+const LABELS=['Green','Yellow','Orange','Red'];
+const LABEL_RANGES={'Green':'60–160','Yellow':'40–60','Orange':'16–40','Red':'0–16 / 340–360'};
 function hueToLabel(h){
   if(h<0) return '';
   if((h>=0&&h<16)||(h>=340&&h<=360)) return 'Red';
   if(h>=16&&h<40) return 'Orange';
   if(h>=40&&h<60) return 'Yellow';
   if(h>=60&&h<160) return 'Green';
-  return ''; // 160..340 outside tomato range
+  return '';
+}
+function colorForHue(h){
+  if(h<0) return 'var(--muted)';
+  const l=hueToLabel(h);
+  return l==='Red'?'#ff5a3c':l==='Orange'?'#ff9a3c':l==='Yellow'?'#e8c84a':l==='Green'?'#7bbf6a':'var(--muted)';
 }
 
 // ---------- state ----------
-let session = null;
-let detections = [];   // {box(orig coords), conf, maskPixels, hue, num, label}
-let prevNums = [];     // remembered individual numbers from past records
-let records = [];      // accumulated CSV rows {date,num,hue,label,conf,maskpx}
-let activeIdx = -1;    // which detection is being edited in modal
-let showMask = true;   // overlay measured mask pixels
+let session=null;
+let detections=[];
+let activeIdx=-1;
+let showMask=true;
+let curImg=null;
+let clusters=[];          // ['房1','房2',...]
+let selectedCluster=null;
+let records=[];           // {cluster,date,num,hue,label,conf,maskpx,photoId}
+let curPhotoBlobUrl=null; // object URL for current capture (for saving)
+let curPhotoDataUrl=null; // data URL to persist in IndexedDB
 
-const $ = id => document.getElementById(id);
-const statusEl=$('status'), pickBtn=$('pickBtn'), fileEl=$('file');
-const cv=$('cv'), cwrap=$('cwrap'), ctx=cv.getContext('2d',{willReadFrequently:true});
-const detList=$('detList'), detItems=$('detItems'), hint=$('hint');
-const footerBar=$('footerBar'), saveBtn=$('saveBtn'), savedCount=$('savedCount');
+const $=id=>document.getElementById(id);
+const statusEl=$('status'),pickBtn=$('pickBtn'),fileEl=$('file');
+const cv=$('cv'),cwrap=$('cwrap'),ctx=cv.getContext('2d',{willReadFrequently:true});
+const detList=$('detList'),detItems=$('detItems'),hint=$('hint');
+const footerBar=$('footerBar'),saveBtn=$('saveBtn'),savedCount=$('savedCount');
 
-function todayStr(){
-  const d=new Date();
-  const p=n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+function todayStr(){const d=new Date();const p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
+$('dateLabel').textContent=todayStr();
+function log(m,c){statusEl.innerHTML=c?`<span class="${c}">${m}</span>`:m;}
+function append(m,c){statusEl.innerHTML+='\n'+(c?`<span class="${c}">${m}</span>`:m);}
+
+// ---------- IndexedDB for photos ----------
+let db=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open('tomatoHueDB',1);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('photos')) d.createObjectStore('photos');
+    };
+    r.onsuccess=e=>{db=e.target.result;res(db);};
+    r.onerror=e=>rej(e.target.error);
+  });
 }
-$('dateLabel').textContent = todayStr();
+function putPhoto(id,dataUrl){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('photos','readwrite');
+    tx.objectStore('photos').put(dataUrl,id);
+    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e.target.error);
+  });
+}
+function getPhoto(id){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('photos','readonly');
+    const rq=tx.objectStore('photos').get(id);
+    rq.onsuccess=()=>res(rq.result||null); rq.onerror=e=>rej(e.target.error);
+  });
+}
+function delPhoto(id){
+  return new Promise(res=>{
+    try{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').delete(id);tx.oncomplete=()=>res();}
+    catch(e){res();}
+  });
+}
 
-function log(msg,cls){ statusEl.innerHTML = cls?`<span class="${cls}">${msg}</span>`:msg; }
-function append(msg,cls){ statusEl.innerHTML += '\n'+(cls?`<span class="${cls}">${msg}</span>`:msg); }
-
-// ---------- persistence (best-effort; CSV is the source of truth) ----------
-function saveLocal(){
+// ---------- localStorage for metadata ----------
+function saveMeta(){
   try{
-    localStorage.setItem('tomato_records', JSON.stringify(records));
-    localStorage.setItem('tomato_prevnums', JSON.stringify(prevNums));
+    localStorage.setItem('th_records',JSON.stringify(records));
+    localStorage.setItem('th_clusters',JSON.stringify(clusters));
   }catch(e){}
 }
-function loadLocal(){
+function loadMeta(){
   try{
-    const r=localStorage.getItem('tomato_records'); if(r) records=JSON.parse(r);
-    const p=localStorage.getItem('tomato_prevnums'); if(p) prevNums=JSON.parse(p);
+    const r=localStorage.getItem('th_records'); if(r) records=JSON.parse(r);
+    const c=localStorage.getItem('th_clusters'); if(c) clusters=JSON.parse(c);
   }catch(e){}
+  if(!clusters.length) clusters=['房1','房2','房3'];
+  selectedCluster=clusters[0];
 }
 function refreshSavedCount(){
   savedCount.style.display='block';
-  savedCount.textContent = `保存済みデータ: ${records.length}行  /  既知の個体番号: ${prevNums.length>0?prevNums.join(', '):'なし'}`;
+  savedCount.textContent=`保存済み ${records.length}件 ・ 房 ${clusters.length}個`;
+}
+
+// ---------- cluster selector ----------
+function renderClusterBar(){
+  const bar=$('clusterBar'); bar.innerHTML='';
+  clusters.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='cluster-chip'+(c===selectedCluster?' sel':'');
+    b.textContent=c;
+    b.onclick=()=>{ selectedCluster=c; renderClusterBar(); };
+    bar.appendChild(b);
+  });
+  const add=document.createElement('button');
+  add.className='cluster-chip add'; add.textContent='＋ 房を追加';
+  add.onclick=()=>{
+    const name=prompt('追加する房の名前（例: 房4）');
+    if(name && name.trim()){
+      const nm=name.trim();
+      if(!clusters.includes(nm)){ clusters.push(nm); selectedCluster=nm; saveMeta(); }
+      renderClusterBar();
+    }
+  };
+  bar.appendChild(add);
 }
 
 // ---------- model ----------
 async function init(){
-  loadLocal();
+  loadMeta();
+  renderClusterBar();
   refreshSavedCount();
+  try{ await openDB(); }catch(e){ /* still works, just no photos */ }
   try{
     log('モデルを読み込んでいます…(初回は数十秒かかることがあります)');
-    ort.env.wasm.numThreads = 1; ort.env.wasm.simd = true;
-    session = await ort.InferenceSession.create(MODEL_URL,{
-      executionProviders:['wasm'], graphOptimizationLevel:'all'
-    });
-    log('準備完了。房を撮影してください。','ok');
-    pickBtn.textContent='房を撮影 / 写真を選ぶ';
-    pickBtn.disabled=false;
+    ort.env.wasm.numThreads=1; ort.env.wasm.simd=true;
+    session=await ort.InferenceSession.create(MODEL_URL,{executionProviders:['wasm'],graphOptimizationLevel:'all'});
+    log('準備完了。房を選んで撮影してください。','ok');
+    pickBtn.textContent='房を撮影 / 写真を選ぶ'; pickBtn.disabled=false;
     footerBar.style.display='flex';
   }catch(e){ log('モデル読み込み失敗:\n'+e.message,'err'); }
 }
 
-pickBtn.addEventListener('click',()=>fileEl.click());
+pickBtn.addEventListener('click',()=>{
+  if(!selectedCluster){ log('先に房を選んでください。','err'); return; }
+  fileEl.click();
+});
 fileEl.addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
   const img=new Image();
-  img.onload=()=>{ runDetection(img); URL.revokeObjectURL(img.src); };
+  img.onload=()=>{ makePhotoDataUrl(img); runDetection(img); URL.revokeObjectURL(img.src); };
   img.onerror=()=>log('画像を開けませんでした。','err');
   img.src=URL.createObjectURL(f); fileEl.value='';
 });
 
-function letterbox(img){
+// downscale captured photo to keep storage light (max 1280px long edge, jpeg)
+function makePhotoDataUrl(img){
+  const maxEdge=1280;
   const iw=img.naturalWidth, ih=img.naturalHeight;
-  const r=Math.min(IMG/iw,IMG/ih), nw=Math.round(iw*r), nh=Math.round(ih*r);
-  const dx=Math.floor((IMG-nw)/2), dy=Math.floor((IMG-nh)/2);
-  const off=document.createElement('canvas'); off.width=IMG; off.height=IMG;
+  const sc=Math.min(1,maxEdge/Math.max(iw,ih));
+  const w=Math.round(iw*sc), h=Math.round(ih*sc);
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  c.getContext('2d').drawImage(img,0,0,w,h);
+  curPhotoDataUrl=c.toDataURL('image/jpeg',0.8);
+}
+
+function letterbox(img){
+  const iw=img.naturalWidth,ih=img.naturalHeight;
+  const r=Math.min(IMG/iw,IMG/ih),nw=Math.round(iw*r),nh=Math.round(ih*r);
+  const dx=Math.floor((IMG-nw)/2),dy=Math.floor((IMG-nh)/2);
+  const off=document.createElement('canvas');off.width=IMG;off.height=IMG;
   const octx=off.getContext('2d',{willReadFrequently:true});
-  octx.fillStyle='#727272'; octx.fillRect(0,0,IMG,IMG);
+  octx.fillStyle='#727272';octx.fillRect(0,0,IMG,IMG);
   octx.drawImage(img,0,0,iw,ih,dx,dy,nw,nh);
   return {octx,r,dx,dy};
 }
 function toTensor(octx){
   const {data}=octx.getImageData(0,0,IMG,IMG);
-  const arr=new Float32Array(3*IMG*IMG), plane=IMG*IMG;
-  for(let i=0;i<plane;i++){
-    arr[i]=data[i*4]/255; arr[plane+i]=data[i*4+1]/255; arr[2*plane+i]=data[i*4+2]/255;
-  }
+  const arr=new Float32Array(3*IMG*IMG),plane=IMG*IMG;
+  for(let i=0;i<plane;i++){arr[i]=data[i*4]/255;arr[plane+i]=data[i*4+1]/255;arr[2*plane+i]=data[i*4+2]/255;}
   return new ort.Tensor('float32',arr,[1,3,IMG,IMG]);
 }
 const sigmoid=x=>1/(1+Math.exp(-x));
@@ -363,155 +358,108 @@ function iou(a,b){
   const ua=(a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-inter;
   return ua>0?inter/ua:0;
 }
-// RGB -> Hue in 0..360
 function rgb2hue(r,g,b){
-  r/=255; g/=255; b/=255;
-  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
-  if(d===0) return -1; // gray: undefined hue, skip
-  let h;
-  if(mx===r) h=((g-b)/d)%6;
-  else if(mx===g) h=(b-r)/d+2;
-  else h=(r-g)/d+4;
-  h*=60; if(h<0) h+=360;
-  return h;
+  r/=255;g/=255;b/=255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+  if(d===0) return -1;
+  let h; if(mx===r)h=((g-b)/d)%6; else if(mx===g)h=(b-r)/d+2; else h=(r-g)/d+4;
+  h*=60; if(h<0)h+=360; return h;
 }
-
-let curImg=null, lbInfo=null;
 
 async function runDetection(img){
   try{
     curImg=img;
-    detList.style.display='none'; detItems.innerHTML=''; detections=[];
-    saveBtn.disabled=true;
+    detList.style.display='none'; detItems.innerHTML=''; detections=[]; saveBtn.disabled=true;
     log('前処理中…');
-    const lb=letterbox(img); lbInfo=lb;
-    const tensor=toTensor(lb.octx);
+    const lb=letterbox(img); const tensor=toTensor(lb.octx);
     log('YOLO推論中…');
     const t0=performance.now();
     const out=await session.run({images:tensor});
     const ms=Math.round(performance.now()-t0);
-
-    const o0=out['output0'], o1=out['output1'];
-    const det=o0.data, proto=o1.data;
-    const NROW=o0.dims[1], NCOL=o0.dims[2];
-    const PC=o1.dims[1], PH=o1.dims[2], PW=o1.dims[3];
-
+    const o0=out['output0'],o1=out['output1'];
+    const det=o0.data,proto=o1.data;
+    const NROW=o0.dims[1],NCOL=o0.dims[2];
+    const PC=o1.dims[1],PH=o1.dims[2],PW=o1.dims[3];
     let dets=[];
     for(let i=0;i<NROW;i++){
-      const base=i*NCOL, conf=det[base+4];
-      if(conf<CONF) continue;
+      const base=i*NCOL,conf=det[base+4]; if(conf<CONF) continue;
       const box=[det[base],det[base+1],det[base+2],det[base+3]];
-      const coef=new Float32Array(32);
-      for(let k=0;k<32;k++) coef[k]=det[base+6+k];
+      const coef=new Float32Array(32); for(let k=0;k<32;k++) coef[k]=det[base+6+k];
       dets.push({box,conf,coef});
     }
     dets.sort((a,b)=>b.conf-a.conf);
-    const keep=[];
-    for(const d of dets){ if(keep.some(k=>iou(k.box,d.box)>IOU_DEDUP)) continue; keep.push(d); }
-
-    const iw=img.naturalWidth, ih=img.naturalHeight;
+    const keep=[]; for(const d of dets){ if(keep.some(k=>iou(k.box,d.box)>IOU_DEDUP)) continue; keep.push(d); }
+    const iw=img.naturalWidth,ih=img.naturalHeight;
     cv.width=iw; cv.height=ih; ctx.drawImage(img,0,0);
     cwrap.style.display='block'; hint.style.display='block';
-
     const inv=(x,y)=>[(x-lb.dx)/lb.r,(y-lb.dy)/lb.r];
-    const src=ctx.getImageData(0,0,iw,ih).data; // original pixels for hue
+    const src=ctx.getImageData(0,0,iw,ih).data;
     const protoPlane=PH*PW;
-
-    keep.forEach((d,idx)=>{
+    keep.forEach(d=>{
       const [bx1,by1]=inv(d.box[0],d.box[1]);
       const [bx2,by2]=inv(d.box[2],d.box[3]);
       const ox1=Math.max(0,Math.floor(bx1)),oy1=Math.max(0,Math.floor(by1));
       const ox2=Math.min(iw,Math.ceil(bx2)),oy2=Math.min(ih,Math.ceil(by2));
-      let cntH=0,maskPx=0;
-      // accumulate hue via circular mean to be safe near 0/360 wrap
-      let sx=0, sy=0;
-      const maskCoords=[];
-      // bilinear sample of the prototype-combined mask at fractional (gx,gy) in 160-grid
+      let cntH=0,maskPx=0,sx=0,sy=0; const maskCoords=[];
       const maskAt=(gx,gy)=>{
-        const x0=Math.floor(gx), y0=Math.floor(gy);
-        const x1=Math.min(PW-1,x0+1), y1=Math.min(PH-1,y0+1);
-        const fx=gx-x0, fy=gy-y0;
-        const xa=Math.max(0,Math.min(PW-1,x0)), ya=Math.max(0,Math.min(PH-1,y0));
+        const x0=Math.floor(gx),y0=Math.floor(gy);
+        const x1=Math.min(PW-1,x0+1),y1=Math.min(PH-1,y0+1);
+        const fx=gx-x0,fy=gy-y0;
+        const xa=Math.max(0,Math.min(PW-1,x0)),ya=Math.max(0,Math.min(PH-1,y0));
         let v00=0,v10=0,v01=0,v11=0;
-        const p00=ya*PW+xa, p10=ya*PW+x1, p01=y1*PW+xa, p11=y1*PW+x1;
-        for(let c=0;c<PC;c++){
-          const cp=c*protoPlane;
-          v00+=d.coef[c]*proto[cp+p00];
-          v10+=d.coef[c]*proto[cp+p10];
-          v01+=d.coef[c]*proto[cp+p01];
-          v11+=d.coef[c]*proto[cp+p11];
-        }
-        const top=v00*(1-fx)+v10*fx, bot=v01*(1-fx)+v11*fx;
+        const p00=ya*PW+xa,p10=ya*PW+x1,p01=y1*PW+xa,p11=y1*PW+x1;
+        for(let c=0;c<PC;c++){const cp=c*protoPlane;
+          v00+=d.coef[c]*proto[cp+p00];v10+=d.coef[c]*proto[cp+p10];
+          v01+=d.coef[c]*proto[cp+p01];v11+=d.coef[c]*proto[cp+p11];}
+        const top=v00*(1-fx)+v10*fx,bot=v01*(1-fx)+v11*fx;
         return sigmoid(top*(1-fy)+bot*fy);
       };
-      for(let oy=oy1;oy<oy2;oy++){
-        for(let ox=ox1;ox<ox2;ox++){
-          const lx=ox*lb.r+lb.dx, ly=oy*lb.r+lb.dy;
-          const gx=lx/IMG*PW, gy=ly/IMG*PH;
-          if(maskAt(gx,gy)>MASK_THR){
-            maskPx++;
-            const o=(oy*iw+ox)*4;
-            const h=rgb2hue(src[o],src[o+1],src[o+2]);
-            if(h>=0){ const rad=h*Math.PI/180; sx+=Math.cos(rad); sy+=Math.sin(rad); cntH++; }
-            maskCoords.push(o);
-          }
+      for(let oy=oy1;oy<oy2;oy++){for(let ox=ox1;ox<ox2;ox++){
+        const lx=ox*lb.r+lb.dx,ly=oy*lb.r+lb.dy;
+        const gx=lx/IMG*PW,gy=ly/IMG*PH;
+        if(maskAt(gx,gy)>MASK_THR){
+          maskPx++; const o=(oy*iw+ox)*4;
+          const h=rgb2hue(src[o],src[o+1],src[o+2]);
+          if(h>=0){const rad=h*Math.PI/180;sx+=Math.cos(rad);sy+=Math.sin(rad);cntH++;}
+          maskCoords.push(o);
         }
-      }
-      let hue=-1;
-      if(cntH>0){ let a=Math.atan2(sy/cntH,sx/cntH)*180/Math.PI; if(a<0)a+=360; hue=a; }
-      // swatch color = average rgb of mask
-      let rr=0,gg=0,bb=0;
-      maskCoords.forEach(o=>{rr+=src[o];gg+=src[o+1];bb+=src[o+2];});
+      }}
+      let hue=-1; if(cntH>0){let a=Math.atan2(sy/cntH,sx/cntH)*180/Math.PI;if(a<0)a+=360;hue=a;}
+      let rr=0,gg=0,bb=0; maskCoords.forEach(o=>{rr+=src[o];gg+=src[o+1];bb+=src[o+2];});
       const n=maskCoords.length||1;
       const swatch=`rgb(${rr/n|0},${gg/n|0},${bb/n|0})`;
-      detections.push({
-        box:[bx1,by1,bx2,by2], conf:d.conf, maskPx, hue,
-        swatch, num:null, label:null, maskCoords
-      });
+      detections.push({box:[bx1,by1,bx2,by2],conf:d.conf,maskPx,hue,swatch,num:null,label:null,maskCoords,rejected:false});
     });
-
-    drawOverlay();
-    renderDetList();
-    detList.style.display = detections.length?'block':'none';
-    log(`<b>検出 ${detections.length}個</b>  推論${ms}ms`, detections.length?'ok':'err');
-    if(detections.length===0) append('トマトが検出されませんでした。明るさや距離を変えて撮り直してください。');
+    drawOverlay(); renderDetList();
+    detList.style.display=detections.length?'block':'none';
+    log(`<b>${selectedCluster} ・ 検出 ${detections.length}個</b>  推論${ms}ms`, detections.length?'ok':'err');
+    if(!detections.length) append('トマトが検出されませんでした。明るさや距離を変えて撮り直してください。');
   }catch(e){ log('検出エラー:\n'+e.message,'err'); console.error(e); }
 }
 
 function drawOverlay(){
   if(!curImg) return;
-  const iw=curImg.naturalWidth, ih=curImg.naturalHeight;
+  const iw=curImg.naturalWidth,ih=curImg.naturalHeight;
   ctx.drawImage(curImg,0,0);
-
-  // optionally paint masks so you can see exactly which pixels are measured
   if(showMask){
     const ov=ctx.getImageData(0,0,iw,ih); const od=ov.data;
     detections.forEach(d=>{
-      if(d.rejected) return; // rejected: hide mask on the image completely
-      const set = d.num!=null;
-      const cr = set?123:255, cg = set?191:90, cb = set?106:60; // green if numbered, orange if not
-      (d.maskCoords||[]).forEach(o=>{
-        od[o]   = od[o]*0.5 + cr*0.5;
-        od[o+1] = od[o+1]*0.5 + cg*0.5;
-        od[o+2] = od[o+2]*0.5 + cb*0.5;
-      });
+      if(d.rejected) return;
+      const set=d.num!=null; const cr=set?123:255,cg=set?191:90,cb=set?106:60;
+      (d.maskCoords||[]).forEach(o=>{od[o]=od[o]*0.5+cr*0.5;od[o+1]=od[o+1]*0.5+cg*0.5;od[o+2]=od[o+2]*0.5+cb*0.5;});
     });
     ctx.putImageData(ov,0,0);
   }
-
-  ctx.font=`bold ${Math.max(18,iw/32)}px -apple-system, sans-serif`;
+  ctx.font=`bold ${Math.max(18,iw/32)}px -apple-system,sans-serif`;
   detections.forEach((d,idx)=>{
-    if(d.rejected) return; // rejected: no label on image
-    const [x1,y1,x2,y2]=d.box;
-    const label = d.num!=null ? `#${d.num}` : `${idx+1}`;
-    const color = d.num!=null ? '#7bbf6a' : '#ff5a3c';
-    const tw=ctx.measureText(label).width+12, th=Math.max(24,iw/26);
-    // place label near top-left of the fruit, just inside the mask area
-    const lx=x1, ly=Math.max(th, y1);
-    ctx.fillStyle=color;
-    ctx.fillRect(lx, ly-th, tw, th);
-    ctx.fillStyle='#14110e';
-    ctx.fillText(label, lx+6, ly-th*0.22);
+    if(d.rejected) return;
+    const [x1,y1]=d.box;
+    const label=d.num!=null?`#${d.num}`:`${idx+1}`;
+    const color=d.num!=null?'#7bbf6a':'#ff5a3c';
+    const tw=ctx.measureText(label).width+12,th=Math.max(24,iw/26);
+    const lx=x1,ly=Math.max(th,y1);
+    ctx.fillStyle=color; ctx.fillRect(lx,ly-th,tw,th);
+    ctx.fillStyle='#14110e'; ctx.fillText(label,lx+6,ly-th*0.22);
   });
 }
 
@@ -520,261 +468,243 @@ function renderDetList(){
   detections.forEach((d,idx)=>{
     const item=document.createElement('div');
     item.className='det-item'+(d.rejected?' rejected':'');
-    const hueTxt = d.hue>=0 ? `Hue ${d.hue.toFixed(1)}` : 'Hue 測定不可';
-    const numCell = d.rejected
-      ? `<div class="det-num set">誤検出</div>`
-      : `<div class="det-num ${d.num!=null?'set':'unset'}">${d.num!=null?('#'+d.num):'番号'}</div>`;
-    item.innerHTML=`
-      <div class="det-swatch" style="background:${d.swatch}"></div>
-      <div class="det-info">
-        <b>${hueTxt}</b><br>
-        確信度 ${(d.conf*100|0)}% ・ ${d.maskPx}px ${d.label?('・ '+d.label):''}
-      </div>
-      ${numCell}
-    `;
+    const hueTxt=d.hue>=0?`Hue ${d.hue.toFixed(1)}`:'Hue 測定不可';
+    const numCell=d.rejected?`<div class="det-num set">誤検出</div>`
+      :`<div class="det-num ${d.num!=null?'set':'unset'}">${d.num!=null?('#'+d.num):'番号'}</div>`;
+    item.innerHTML=`<div class="det-swatch" style="background:${d.swatch}"></div>
+      <div class="det-info"><b>${hueTxt}</b><br>確信度 ${(d.conf*100|0)}% ・ ${d.maskPx}px ${d.label?('・ '+d.label):''}</div>${numCell}`;
     item.addEventListener('click',()=>openModal(idx));
     detItems.appendChild(item);
   });
-  // enable save if at least one non-rejected detection has a number
-  saveBtn.disabled = !detections.some(d=>d.num!=null && !d.rejected);
+  saveBtn.disabled=!detections.some(d=>d.num!=null && !d.rejected);
 }
 
-// allow tapping the canvas to open the nearest detection
-$('maskToggle').addEventListener('change',e=>{ showMask=e.target.checked; drawOverlay(); });
-
-// find smallest detection whose box contains the point
+$('maskToggle').addEventListener('change',e=>{showMask=e.target.checked;drawOverlay();});
 function detAt(x,y){
   let best=-1,bestA=Infinity;
-  detections.forEach((d,idx)=>{
-    const [x1,y1,x2,y2]=d.box;
-    if(x>=x1&&x<=x2&&y>=y1&&y<=y2){
-      const a=(x2-x1)*(y2-y1); if(a<bestA){bestA=a;best=idx;}
-    }
-  });
+  detections.forEach((d,idx)=>{const [x1,y1,x2,y2]=d.box;
+    if(x>=x1&&x<=x2&&y>=y1&&y<=y2){const a=(x2-x1)*(y2-y1);if(a<bestA){bestA=a;best=idx;}}});
   return best;
 }
-function evtToCanvas(e){
-  const rect=cv.getBoundingClientRect();
-  const scale=cv.width/rect.width;
-  return [ (e.clientX-rect.left)*scale, (e.clientY-rect.top)*scale ];
-}
-
-// tap a detection on the image to open its number/label/reject panel
 cv.addEventListener('click',e=>{
-  const [x,y]=evtToCanvas(e);
-  const idx=detAt(x,y);
-  if(idx>=0) openModal(idx);
+  const rect=cv.getBoundingClientRect(),scale=cv.width/rect.width;
+  const x=(e.clientX-rect.left)*scale,y=(e.clientY-rect.top)*scale;
+  const idx=detAt(x,y); if(idx>=0) openModal(idx);
 });
 
-// ---------- modal ----------
+// ---------- assignment modal ----------
 const modalBg=$('modalBg');
+// numbers used so far in this capture (for quick re-pick)
+function usedNumsThisPhoto(){
+  return [...new Set(detections.filter(d=>d.num!=null).map(d=>d.num))];
+}
 function openModal(idx){
-  activeIdx=idx;
-  const d=detections[idx];
-  $('modalSub').textContent = `Hue ${d.hue>=0?d.hue.toFixed(1):'—'} のトマトに番号と熟度を割り当てます。`;
-  // previous numbers
+  activeIdx=idx; const d=detections[idx];
+  $('modalSub').textContent=`Hue ${d.hue>=0?d.hue.toFixed(1):'—'} のトマトに番号と熟度を割り当てます。`;
+  // suggest next number = max used +1
+  const used=usedNumsThisPhoto().map(Number).filter(n=>!isNaN(n));
+  const nextNum=used.length?Math.max(...used)+1:1;
   const pn=$('prevNums'); pn.innerHTML='';
-  if(prevNums.length){
-    const grid=document.createElement('div'); grid.className='numgrid';
-    prevNums.forEach(n=>{
-      const b=document.createElement('button'); b.className='prev'; b.textContent='#'+n;
-      b.onclick=()=>{ assignNum(n); };
-      grid.appendChild(b);
-    });
-    pn.appendChild(grid);
+  const grid=document.createElement('div'); grid.className='numgrid';
+  // quick buttons: 1..max(used+1, 5)
+  const top=Math.max(nextNum,5);
+  for(let i=1;i<=top;i++){
+    const b=document.createElement('button'); b.textContent='#'+i;
+    if(String(d.num)===String(i)) b.classList.add('sel');
+    b.onclick=()=>assignNum(i);
+    grid.appendChild(b);
   }
-  // labels (with hue range hints; auto-suggested label is outlined)
+  pn.appendChild(grid);
   const lr=$('labelRow'); lr.innerHTML='';
-  const suggested = hueToLabel(d.hue);
+  const suggested=hueToLabel(d.hue);
   LABELS.forEach(l=>{
     const b=document.createElement('button');
-    b.innerHTML = `${l}<br><span style="font-size:10px;color:var(--muted)">${LABEL_RANGES[l]}</span>`;
+    b.innerHTML=`${l}<br><span style="font-size:10px;color:var(--muted)">${LABEL_RANGES[l]}</span>`;
     if(d.label===l) b.classList.add('sel');
     if(d.label==null && l===suggested) b.style.borderColor='var(--accent)';
-    b.onclick=()=>{ detections[idx].label=l; openModal(idx); renderDetList(); };
+    b.onclick=()=>{ detections[idx].label=(detections[idx].label===l?null:l); openModal(idx); renderDetList(); };
     lr.appendChild(b);
   });
-  // reject toggle button reflects current state
   const rj=$('modalReject');
-  if(d.rejected){ rj.classList.add('on'); rj.textContent='誤検出を取り消す'; }
-  else { rj.classList.remove('on'); rj.textContent='誤検出にする'; }
+  if(d.rejected){rj.classList.add('on');rj.textContent='誤検出を取り消す';}
+  else{rj.classList.remove('on');rj.textContent='誤検出にする';}
+  const cur=$('curAssign');
+  cur.textContent=d.num!=null?`現在: #${d.num}${d.label?(' ・ '+d.label):''}`:(d.label?`現在: ${d.label}（番号未設定）`:'番号未設定');
   $('newNumInput').value='';
   modalBg.style.display='flex';
 }
 function assignNum(n){
-  if(activeIdx<0) return;
-  n=String(n).trim();
-  if(!n) return;
+  if(activeIdx<0) return; n=String(n).trim(); if(!n) return;
   detections[activeIdx].num=n;
-  if(!prevNums.includes(n)){ prevNums.push(n); prevNums.sort(natCompare); }
-  modalBg.style.display='none';
-  drawOverlay(); renderDetList();
+  drawOverlay(); renderDetList(); openModal(activeIdx);
 }
-$('newNumBtn').onclick=()=>{
-  const v=$('newNumInput').value.trim();
-  if(v) assignNum(v);
-};
-$('modalClear').onclick=()=>{
-  if(activeIdx>=0){ detections[activeIdx].num=null; detections[activeIdx].label=null; }
-  modalBg.style.display='none'; drawOverlay(); renderDetList();
-};
-$('modalReject').onclick=()=>{
-  if(activeIdx<0) return;
-  detections[activeIdx].rejected = !detections[activeIdx].rejected;
-  openModal(activeIdx); drawOverlay(); renderDetList();
-};
-$('modalCancel').onclick=()=>{ modalBg.style.display='none'; };
+$('newNumBtn').onclick=()=>{const v=$('newNumInput').value.trim(); if(v) assignNum(v);};
+$('modalReject').onclick=()=>{ if(activeIdx<0)return;
+  detections[activeIdx].rejected=!detections[activeIdx].rejected; openModal(activeIdx); drawOverlay(); renderDetList(); };
+$('modalClear').onclick=()=>{ if(activeIdx>=0){detections[activeIdx].num=null;detections[activeIdx].label=null;}
+  modalBg.style.display='none'; drawOverlay(); renderDetList(); };
+$('modalDone').onclick=()=>{ modalBg.style.display='none'; };
 modalBg.addEventListener('click',e=>{ if(e.target===modalBg) modalBg.style.display='none'; });
 
-// ---------- save / CSV ----------
-saveBtn.addEventListener('click',()=>{
+// ---------- save ----------
+saveBtn.addEventListener('click',async()=>{
   const date=todayStr();
+  const toSave=detections.filter(d=>d.num!=null && !d.rejected);
+  if(!toSave.length){ log('番号を割り当てたトマトがありません。','err'); return; }
+  // one photo per capture; store under a unique id
+  let photoId='';
+  if(curPhotoDataUrl && db){
+    photoId=`${selectedCluster}_${date}_${Date.now()}`;
+    try{ await putPhoto(photoId,curPhotoDataUrl); }catch(e){ photoId=''; }
+  }
   let added=0;
-  detections.forEach(d=>{
-    if(d.num==null || d.rejected) return;
+  toSave.forEach(d=>{
     records.push({
-      date, num:d.num,
-      hue: d.hue>=0 ? d.hue.toFixed(2) : '',
-      label: d.label||'',
-      conf: (d.conf).toFixed(3),
-      maskpx: d.maskPx
+      cluster:selectedCluster, date, num:String(d.num),
+      hue:d.hue>=0?d.hue.toFixed(2):'', label:d.label||'',
+      conf:d.conf.toFixed(3), maskpx:d.maskPx, photoId
     });
     added++;
   });
-  saveLocal(); refreshSavedCount();
-  if($('recordsView').style.display!=='none') renderRecords();
-  log(`<b>記録しました</b>  ${added}個を ${todayStr()} として追加。合計 ${records.length}行。`,'ok');
-  append('「記録」タブで個体ごとの推移を確認できます。学習用にCSVも書き出せます。');
-  // reset current photo state
+  saveMeta(); refreshSavedCount();
+  log(`<b>記録しました</b>  ${selectedCluster} ・ ${date} に ${added}個。合計 ${records.length}件。`,'ok');
+  append('「記録」タブで房→日付→個体とたどって確認できます。');
   detections=[]; detItems.innerHTML=''; detList.style.display='none';
   cwrap.style.display='none'; hint.style.display='none'; saveBtn.disabled=true;
+  curPhotoDataUrl=null;
 });
 
+// ---------- CSV export ----------
 function recordsToCSV(){
-  const head='date,num,hue,label,conf,maskpx';
-  const lines=records.map(r=>[r.date,r.num,r.hue,r.label,r.conf,r.maskpx].join(','));
+  const head='cluster,date,num,hue,label,conf,maskpx';
+  const lines=records.map(r=>[r.cluster,r.date,r.num,r.hue,r.label,r.conf,r.maskpx].join(','));
   return [head,...lines].join('\n');
 }
 $('exportBtn').addEventListener('click',()=>{
-  if(records.length===0){ log('まだ記録がありません。','err'); return; }
+  if(!records.length){ log('まだ記録がありません。','err'); return; }
   const blob=new Blob([recordsToCSV()],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=`tomato_hue_${todayStr()}.csv`;
+  const a=document.createElement('a'); a.href=url; a.download=`tomato_hue_${todayStr()}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
-  log('CSVを書き出しました。ファイルに保存してください。','ok');
-});
-$('importBtn').addEventListener('click',()=>$('csvFile').click());
-$('csvFile').addEventListener('change',e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const text=reader.result.trim();
-      const rows=text.split(/\r?\n/);
-      const start = rows[0].toLowerCase().startsWith('date,') ? 1 : 0;
-      const imported=[];
-      const nums=new Set(prevNums);
-      for(let i=start;i<rows.length;i++){
-        if(!rows[i].trim()) continue;
-        const [date,num,hue,label,conf,maskpx]=rows[i].split(',');
-        const id=(num||'').trim();
-        imported.push({date,num:id,hue,label,conf,maskpx});
-        if(id!=='') nums.add(id);
-      }
-      records=imported;
-      prevNums=[...nums].filter(n=>n!=='').sort(natCompare);
-      saveLocal(); refreshSavedCount();
-      if($('recordsView').style.display!=='none') renderRecords();
-      log(`CSVを読み込みました。${records.length}行・個体番号 ${prevNums.join(', ')||'なし'}。続きから追記できます。`,'ok');
-    }catch(err){ log('CSV読み込み失敗: '+err.message,'err'); }
-  };
-  reader.readAsText(f); e.target.value='';
+  log('CSVを書き出しました。','ok');
 });
 
-// ---------- tabs & records view ----------
-function colorForHue(h){
-  if(h<0) return 'var(--muted)';
-  const lab=hueToLabel(h);
-  if(lab==='Red') return '#ff5a3c';
-  if(lab==='Orange') return '#ff9a3c';
-  if(lab==='Yellow') return '#e8c84a';
-  if(lab==='Green') return '#7bbf6a';
-  return 'var(--muted)';
+// ---------- records browser (3 levels) ----------
+let navState={level:'clusters', cluster:null, date:null}; // levels: clusters / dates / individuals
+
+function setCrumbs(){
+  const c=$('crumbs'); c.innerHTML='';
+  const mk=(label,fn)=>{const a=document.createElement('a');a.href='#';a.textContent=label;a.onclick=e=>{e.preventDefault();fn();};return a;};
+  const sep=()=>{const s=document.createElement('span');s.textContent='›';return s;};
+  c.appendChild(mk('房一覧',()=>{navState={level:'clusters',cluster:null,date:null};renderRecords();}));
+  if(navState.cluster){ c.appendChild(sep());
+    c.appendChild(mk(navState.cluster,()=>{navState={level:'dates',cluster:navState.cluster,date:null};renderRecords();})); }
+  if(navState.date){ c.appendChild(sep());
+    const s=document.createElement('span');s.style.color='var(--text)';s.textContent=navState.date;c.appendChild(s); }
 }
-function renderRecords(){
-  const body=$('recordsBody');
+
+async function renderRecords(){
+  setCrumbs();
+  const body=$('recordsBody'); body.innerHTML='';
   if(!records.length){
-    body.innerHTML=`<div class="rec-empty">まだ記録がありません。<br>「撮影」タブでトマトを記録すると、ここに個体ごとのHueの推移が表示されます。</div>`;
+    body.innerHTML=`<div class="rec-empty">まだ記録がありません。<br>「撮影」タブで房を選んでトマトを記録すると、ここに房→日付→個体の順で表示されます。</div>`;
     return;
   }
-  // group by num, keeping each record's index in the records array
-  const byNum={};
-  records.forEach((r,gi)=>{
-    const n=String(r.num);
-    (byNum[n]=byNum[n]||[]).push({r, gi});
-  });
-  // sort numbers ascending, rows by date ascending
-  const nums=Object.keys(byNum).sort(natCompare);
-  let html='';
-  nums.forEach(n=>{
-    const rows=byNum[n].slice().sort((a,b)=>String(a.r.date).localeCompare(String(b.r.date)));
-    const last=rows[rows.length-1].r;
-    const first=rows[0].r;
-    const lastHue = last.hue!=='' ? Number(last.hue) : -1;
-    const overall = (first.hue!=='' && last.hue!=='') ? (Number(last.hue)-Number(first.hue)) : null;
-    html+=`<div class="rec-card">
-      <div class="rec-head">
-        <div class="badge" style="background:${colorForHue(lastHue)};font-size:${n.length>=4?'13px':n.length===3?'15px':'18px'}">${n}</div>
-        <div class="rec-meta">
-          <div class="t">個体 #${n}</div>
-          <div class="s">${rows.length}回記録 ・ 最新 Hue ${lastHue>=0?lastHue.toFixed(1):'—'}${overall!=null?` ・ 通算 ${overall>=0?'+':''}${overall.toFixed(1)}`:''}</div>
-        </div>
-      </div>
-      <div class="rec-rows">`;
-    let prev=null;
-    rows.forEach(({r,gi})=>{
-      const hue = r.hue!=='' ? Number(r.hue) : -1;
-      let delta='', dcls='';
-      if(prev!=null && hue>=0){
-        const d=hue-prev;
-        if(Math.abs(d)>=0.05){ delta=(d>=0?'+':'')+d.toFixed(1); dcls=d<0?'down':'up'; }
-        else { delta='±0'; }
+  if(navState.level==='clusters'){
+    // list clusters that have records
+    const byC={}; records.forEach(r=>{(byC[r.cluster]=byC[r.cluster]||[]).push(r);});
+    const names=clusters.filter(c=>byC[c]); // only clusters with data
+    if(!names.length){ body.innerHTML=`<div class="rec-empty">記録のある房がまだありません。</div>`; return; }
+    const grid=document.createElement('div'); grid.className='grid-cards';
+    for(const c of names){
+      const rs=byC[c];
+      const dates=[...new Set(rs.map(r=>r.date))];
+      // newest photo for thumbnail
+      const withPhoto=rs.filter(r=>r.photoId).sort((a,b)=>b.date.localeCompare(a.date));
+      const card=document.createElement('div'); card.className='folder';
+      const thumb=document.createElement('div'); thumb.className='thumb empty'; thumb.textContent='🍅';
+      card.appendChild(thumb);
+      const meta=document.createElement('div'); meta.className='fmeta';
+      meta.innerHTML=`<div class="t">${c}</div><div class="s">${dates.length}日分 ・ ${rs.length}件</div>`;
+      card.appendChild(meta);
+      card.onclick=()=>{ navState={level:'dates',cluster:c,date:null}; renderRecords(); };
+      grid.appendChild(card);
+      if(withPhoto[0]){ getPhoto(withPhoto[0].photoId).then(du=>{ if(du){
+        const im=document.createElement('img'); im.className='thumb'; im.src=du;
+        thumb.replaceWith(im);
+      }}); }
+    }
+    body.appendChild(grid);
+  }
+  else if(navState.level==='dates'){
+    const rs=records.filter(r=>r.cluster===navState.cluster);
+    const byD={}; rs.forEach(r=>{(byD[r.date]=byD[r.date]||[]).push(r);});
+    const dates=Object.keys(byD).sort((a,b)=>b.localeCompare(a)); // newest first
+    const grid=document.createElement('div'); grid.className='grid-cards';
+    for(const dt of dates){
+      const drs=byD[dt];
+      const photoRec=drs.find(r=>r.photoId);
+      const card=document.createElement('div'); card.className='folder';
+      const thumb=document.createElement('div'); thumb.className='thumb empty'; thumb.textContent='📅';
+      card.appendChild(thumb);
+      const meta=document.createElement('div'); meta.className='fmeta';
+      meta.innerHTML=`<div class="t">${dt}</div><div class="s">${drs.length}個体</div>`;
+      card.appendChild(meta);
+      card.onclick=()=>{ navState={level:'individuals',cluster:navState.cluster,date:dt}; renderRecords(); };
+      grid.appendChild(card);
+      if(photoRec){ getPhoto(photoRec.photoId).then(du=>{ if(du){
+        const im=document.createElement('img'); im.className='thumb'; im.src=du; thumb.replaceWith(im);
+      }}); }
+    }
+    body.appendChild(grid);
+  }
+  else if(navState.level==='individuals'){
+    const drs=records.filter(r=>r.cluster===navState.cluster && r.date===navState.date);
+    // big photo for the day
+    const photoRec=drs.find(r=>r.photoId);
+    if(photoRec){ const du=await getPhoto(photoRec.photoId);
+      if(du){ const im=document.createElement('img'); im.className='big-photo'; im.src=du; body.appendChild(im); } }
+    // individuals sorted numerically
+    drs.sort((a,b)=>Number(a.num)-Number(b.num));
+    drs.forEach((r)=>{
+      const gi=records.indexOf(r);
+      const hue=r.hue!==''?Number(r.hue):-1;
+      // trend across all dates for this individual in this cluster
+      const hist=records.filter(x=>x.cluster===r.cluster && x.num===r.num && x.hue!=='')
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      let trend='';
+      if(hist.length>1){
+        const first=Number(hist[0].hue),last=Number(hist[hist.length-1].hue);
+        const d=last-first;
+        trend=` ・ 通算 ${d>=0?'+':''}${d.toFixed(1)}（${hist.length}日）`;
       }
-      if(hue>=0) prev=hue;
-      html+=`<div class="rec-row">
-        <div class="rdate">${r.date}</div>
-        <div class="rhue" style="color:${colorForHue(hue)}">${hue>=0?hue.toFixed(1):'—'}</div>
+      const row=document.createElement('div'); row.className='rec-row';
+      row.innerHTML=`<div class="rnum">#${r.num}</div>
+        <div class="rhue" style="color:${colorForHue(hue)}">${hue>=0?hue.toFixed(1):'—'}<span style="font-size:11px;color:var(--muted);font-weight:400">${trend}</span></div>
         ${r.label?`<div class="rlabel">${r.label}</div>`:''}
-        <div class="rdelta ${dcls}">${delta}</div>
-        <button class="rdel" data-gi="${gi}" title="この記録を削除">✕</button>
-      </div>`;
+        <button class="rdel" title="削除">✕</button>`;
+      row.querySelector('.rdel').onclick=async(e)=>{
+        e.stopPropagation();
+        if(!confirm(`この記録を削除しますか?\n\n${r.cluster} ・ ${r.date} ・ #${r.num} ・ Hue ${r.hue||'—'}`)) return;
+        records.splice(gi,1);
+        // if no record uses this photo anymore, delete it from storage
+        if(r.photoId && !records.some(x=>x.photoId===r.photoId)) delPhoto(r.photoId);
+        saveMeta(); refreshSavedCount();
+        renderRecords();
+      };
+      body.appendChild(row);
     });
-    html+=`</div></div>`;
-  });
-  body.innerHTML=html;
-  // wire up per-row delete buttons
-  body.querySelectorAll('.rdel').forEach(btn=>{
-    btn.onclick=()=>{
-      const gi=Number(btn.getAttribute('data-gi'));
-      const r=records[gi];
-      if(!r) return;
-      if(!confirm(`この記録を削除しますか?\n\n個体 #${r.num} ・ ${r.date} ・ Hue ${r.hue||'—'}`)) return;
-      records.splice(gi,1);
-      saveLocal(); refreshSavedCount();
-      renderRecords();
-    };
-  });
+  }
 }
 
 function switchTab(which){
-  const cap = which==='capture';
-  $('tabCapture').classList.toggle('active', cap);
-  $('tabRecords').classList.toggle('active', !cap);
-  $('captureView').style.display = cap?'block':'none';
-  $('recordsView').style.display = cap?'none':'block';
-  if(!cap) renderRecords();
+  const cap=which==='capture';
+  $('tabCapture').classList.toggle('active',cap);
+  $('tabRecords').classList.toggle('active',!cap);
+  $('captureView').style.display=cap?'block':'none';
+  $('recordsView').style.display=cap?'none':'block';
+  if(!cap){ navState={level:'clusters',cluster:null,date:null}; renderRecords(); }
 }
 $('tabCapture').onclick=()=>switchTab('capture');
 $('tabRecords').onclick=()=>switchTab('records');
